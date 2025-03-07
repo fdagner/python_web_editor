@@ -28,6 +28,9 @@ This project is not intended for production use but is designed for **educationa
 7. **Code Output**  
    The output of the executed code will be displayed in the "Output" section. If there are any errors in the code, they will be shown here as well.
 
+8. **Debugging**
+   A breakpoint can be set. The code is executed including the line of the breakpoint.
+
 ## Usage
 
 1. Open the editor in your browser.
