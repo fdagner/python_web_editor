@@ -110,3 +110,20 @@ body.fullscreen #editor {
 body.fullscreen #output {
     min-height: 500px;
 }
+
+.ace_gutter-cell.ace_breakpoint {
+    background-color: #ff3333; /* Red background for breakpoint */
+    color: white;
+    cursor: pointer;
+}
+
+.ace_gutter {
+    cursor: pointer; /* Make line numbers clickable */
+}
+
+#breakpoint-code {
+    font-family: monospace;
+    white-space: pre-wrap; /* Erhält Zeilenumbrüche */
+    max-height: 200px; /* Optional: Begrenze die Höhe */
+    overflow-y: auto; /* Scrollbar bei Bedarf */
+  }

@@ -1,8 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Initialize Ace Editor
+  // Initialize first Ace Editor 
   window.editor = ace.edit("editor");
   editor.setTheme("ace/theme/monokai");
   editor.session.setMode("ace/mode/python");
+
+  // Initialize second Ace Editor
+  window.editor2 = ace.edit("editor2");
+  editor2.setTheme("ace/theme/monokai");
+  editor2.session.setMode("ace/mode/python");
+  editor2.setReadOnly(true);  // Make second editor read-only
+
+  // Store breakpoints
+  let breakpoints = new Set();
 
   // Function for retrieving the parameter from the URL
   function getQueryParam(param) {
@@ -10,9 +19,55 @@ document.addEventListener("DOMContentLoaded", function () {
     return urlParams.get(param);
   }
 
-  /// Get file name from the URL (e.g. ?file=myscript.py)
+  // Get file name from the URL (e.g. ?file=myscript.py)
   const filename = getQueryParam("file");
   const storageKey = filename ? `python_code_${filename}` : "python_code_default";
+
+  // Add breakpoint toggle functionality
+  editor.on("guttermousedown", function (e) {
+    const target = e.domEvent.target;
+
+    if (target.className.indexOf("ace_gutter-cell") === -1) {
+      return;
+    }
+
+    // Get the clicked row (line number - 1 because Ace uses 0-based indexing)
+    const row = e.getDocumentPosition().row;
+
+    // Remove all existing breakpoints
+    editor.session.clearBreakpoints();
+
+    // Add the new breakpoint (if it wasn't already set)
+    if (!breakpoints.has(row)) {
+      breakpoints.clear(); // Clear any previous breakpoints
+      breakpoints.add(row);
+      editor.session.setBreakpoint(row);
+    } else {
+      // If the breakpoint exists, remove it
+      breakpoints.clear();
+      editor.session.clearBreakpoints();
+    }
+
+    // Save the current breakpoint to localStorage
+    localStorage.setItem(`${storageKey}_breakpoints`, JSON.stringify([...breakpoints]));
+
+    e.stop(); // Prevent other events
+
+    // Sync the second editor with code up to breakpoint
+    syncEditorWithBreakpoint();
+  });
+
+  // Sync the second editor with code up to breakpoint
+  function syncEditorWithBreakpoint() {
+    const code = editor.getValue();
+    const breakpointLine = [...breakpoints].pop(); // Get the last breakpoint (if any)
+    if (breakpointLine !== undefined) {
+      const codeUntilBreakpoint = code.split("\n").slice(0, breakpointLine + 1).join("\n");
+      editor2.setValue(codeUntilBreakpoint, -1);
+    } else {
+      editor2.setValue(code, -1); // Show all code if no breakpoint
+    }
+  }
 
   // Load code from local storage or file
   function loadCode() {
@@ -27,6 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(code => {
           editor.setValue(code, -1);
+          syncEditorWithBreakpoint();  // Sync second editor after loading
         })
         .catch(error => console.error("Fehler beim Laden der Datei:", error));
     }
@@ -35,6 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Automatically save changes in the editor
   editor.session.on("change", function () {
     localStorage.setItem(storageKey, editor.getValue());
+    syncEditorWithBreakpoint();  // Sync the second editor when code changes
   });
 
   // Load code at startup
@@ -44,12 +101,15 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("reset").addEventListener("click", function () {
     localStorage.removeItem(storageKey);
     document.getElementById("output").textContent = "Ausgabe wird hier angezeigt...";
-
-    // Always reset editor before attempting to load a file
     editor.setValue("");
+    editor2.setValue("");
+
+    // Clear all breakpoints
+    breakpoints.clear();
+    editor.session.clearBreakpoints();
+    editor2.setValue(""); // Clear second editor
 
     if (filename) {
-      // Reload file
       fetch(`py/${filename}`)
         .then(response => {
           if (!response.ok) throw new Error("File could not be loaded");
@@ -57,64 +117,15 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(code => {
           editor.setValue(code, -1);
+          syncEditorWithBreakpoint();  // Sync second editor after loading
         })
         .catch(error => console.error("Error loading file:", error));
     }
   });
 
-
-  // Activate/deactivate full screen mode
-  document.getElementById("fullscreen").addEventListener("click", function () {
-    const element = document.documentElement;
-    const fullscreenButton = document.getElementById("fullscreen");
-
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-      document.body.classList.remove("fullscreen");
-      fullscreenButton.innerHTML = '<i class="fas fa-expand"></i>';
-    } else {
-      element.requestFullscreen();
-      document.body.classList.add("fullscreen");
-      fullscreenButton.innerHTML = '<i class="fas fa-compress"></i>';
-    }
-  });
-
-  // Monitors the end of full screen mode
-  document.addEventListener("fullscreenchange", function () {
-    if (!document.fullscreenElement) {
-      document.body.classList.remove("fullscreen");
-      document.getElementById("fullscreen").innerHTML = '<i class="fas fa-expand"></i>';
-    }
-  });
-
-  // Execute code with Brython
-  document.getElementById("run").addEventListener("click", function () {
-    const outputDiv = document.getElementById("output");
-    outputDiv.textContent = "Code wird ausgeführt...";
-  
-    try {
-      // Redirect stdout to the output div
-      __BRYTHON__.python_to_js(`
-        import sys
-        from browser import document
-        class OutputRedirector:
-            def write(self, text):
-                document["output"].textContent += text
-            def flush(self):
-                pass
-        sys.stdout = OutputRedirector()
-      `);
-      __BRYTHON__.run_script(editor.getValue());
-      if (outputDiv.textContent === "Code wird ausgeführt...") {
-        outputDiv.textContent += "\nFertig!";
-      }
-    } catch (error) {
-      outputDiv.textContent = `Fehler: ${error}`;
-    }
-  });
   document.getElementById("download").addEventListener("click", function () {
     const filename = getQueryParam("file") || "code.py";
-    const code = editor.getValue();
+    const code = editor2.getValue();  // Download the code from editor2
     const blob = new Blob([code], { type: "text/plain" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -122,4 +133,16 @@ document.addEventListener("DOMContentLoaded", function () {
     link.click();
   });
 
+  // Optional: Load stored breakpoints from localStorage
+  const storedBreakpoints = localStorage.getItem(`${storageKey}_breakpoints`);
+  if (storedBreakpoints) {
+    breakpoints = new Set(JSON.parse(storedBreakpoints));
+    breakpoints.forEach(row => editor.session.setBreakpoint(row));
+    syncEditorWithBreakpoint();  // Sync second editor with existing breakpoints
+  }
+
+  // Save breakpoints when they change
+  editor.session.on("changeBreakpoint", function () {
+    localStorage.setItem(`${storageKey}_breakpoints`, JSON.stringify([...breakpoints]));
+  });
 });
