@@ -94,7 +94,6 @@ button:hover {
 }
 
 body.fullscreen {
-    font-size: 18px;
     height: 100vh;
 }
 
@@ -104,11 +103,23 @@ body.fullscreen .output-container {
 }
 
 body.fullscreen #editor {
-    height: 500px;
+    height: 90%;
 }
 
 body.fullscreen #output {
-    min-height: 500px;
+    min-height: 88%;
+}
+
+body.fullscreen .ace_editor,body.fullscreen  #output {
+    font-size: 24px;
+}
+
+
+body.fullscreen .container {
+    max-width: 1800px;
+    max-height: 900px;
+    width: 90vw;
+    height: 75vh;
 }
 
 .ace_gutter-cell.ace_breakpoint {
