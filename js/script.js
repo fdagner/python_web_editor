@@ -145,4 +145,28 @@ document.addEventListener("DOMContentLoaded", function () {
   editor.session.on("changeBreakpoint", function () {
     localStorage.setItem(`${storageKey}_breakpoints`, JSON.stringify([...breakpoints]));
   });
+
+  // Activate/deactivate full screen mode
+  document.getElementById("fullscreen").addEventListener("click", function () {
+    const element = document.documentElement;
+    const fullscreenButton = document.getElementById("fullscreen");
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+      document.body.classList.remove("fullscreen");
+      fullscreenButton.innerHTML = '<i class="fas fa-expand"></i>';
+    } else {
+      element.requestFullscreen();
+      document.body.classList.add("fullscreen");
+      fullscreenButton.innerHTML = '<i class="fas fa-compress"></i>';
+    }
+  });
+
+  // Monitors the end of full screen mode
+  document.addEventListener("fullscreenchange", function () {
+    if (!document.fullscreenElement) {
+      document.body.classList.remove("fullscreen");
+      document.getElementById("fullscreen").innerHTML = '<i class="fas fa-expand"></i>';
+    }
+  });
 });
