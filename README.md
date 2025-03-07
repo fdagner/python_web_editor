@@ -60,8 +60,8 @@ This project is not intended for production use but is designed for **educationa
 
 ## TODOs
 
-- **Improve Mobile View**: Enhance the layout and functionality of the editor for mobile devices, ensuring a smooth and responsive experience.
-- **Enhance Fullscreen Mode**: Improve fullscreen mode handling to better adjust the layout for different screen sizes and prevent UI issues.
+- [ ] **Improve Mobile View**: Enhance the layout and functionality of the editor for mobile devices, ensuring a smooth and responsive experience.
+- [x] ~~**Enhance Fullscreen Mode**: Improve fullscreen mode handling to better adjust the layout for different screen sizes and prevent UI issues.~~
 
 ## License
 
