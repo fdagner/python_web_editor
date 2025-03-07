@@ -1,0 +1,112 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 490px;
+    margin: 0;
+    background-color: #f4f4f4;
+    transition: all 0.3s ease;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 99%;
+    max-width: 1000px;
+}
+
+@media (min-width: 768px) {
+    .container {
+        flex-direction: row;
+        gap: 20px;
+    }
+}
+
+.editor-container, .output-container {
+    flex: 1;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+#editor {
+    height: 320px;
+    width: 100%;
+    border: 1px solid #ccc;
+}
+
+#output {
+    min-height: 300px;
+    padding: 10px;
+    background: #eee;
+    white-space: pre-wrap;
+    overflow: auto;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    /* Abstand nach oben */
+    gap: 15px;
+}
+
+button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+button:hover {
+    background: #218838;
+}
+
+.reset-button {
+    background: #dc3545;
+}
+
+.reset-button:hover {
+    background: #c82333;
+}
+
+.download-button {
+    background: #007bff;
+}
+
+.download-button:hover {
+    background: #0056b3;
+}
+
+.fullscreen-button {
+    background: #ffc107;
+}
+
+.fullscreen-button:hover {
+    background: #e0a800;
+}
+
+body.fullscreen {
+    font-size: 18px;
+    height: 100vh;
+}
+
+body.fullscreen .editor-container,
+body.fullscreen .output-container {
+    padding: 20px;
+}
+
+body.fullscreen #editor {
+    height: 500px;
+}
+
+body.fullscreen #output {
+    min-height: 500px;
+}

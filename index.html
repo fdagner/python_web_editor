@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Run Python code in the browser using Brython." />
+    <meta name="author" content="Your Name" />
+    <title>Python Editor</title>
+    <script src="js/brython.min.js"></script>
+    <script src="js/brython_stdlib.js"></script>
+    <script src="js/ace.js"></script>
+    <script src="js/all.min.js"></script>
+    <script src="js/script.js"></script>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body onload="brython()">
+    <h3>Python Editor</h3>
+
+    <div class="buttons">
+      <button id="run" title="Code ausführen">
+        <i class="fas fa-play"></i>
+      </button>
+      <button id="reset" class="reset-button" title="Editor zurücksetzen">
+        <i class="fas fa-redo"></i>
+      </button>
+      <button id="download" class="download-button" title="Code herunterladen">
+        <i class="fas fa-download"></i>
+      </button>
+      <button
+        id="fullscreen"
+        class="fullscreen-button"
+        title="Vollbild ein/aus"
+      >
+        <i class="fas fa-expand"></i>
+      </button>
+    </div>
+
+    <div class="container">
+      <div class="editor-container">
+        <h4>Eingabe</h4>
+        <div id="editor"></div>
+      </div>
+      <div class="output-container">
+        <h4>Ausgabe</h4>
+        <pre id="output">Ausgabe wird hier angezeigt...</pre>
+      </div>
+    </div>
+
+    <script type="text/python">
+      from browser import document, window
+      import sys
+      from browser import html
+
+      class OutputBuffer:
+          def __init__(self):
+              self.output = ""
+          def write(self, text):
+              self.output += text
+          def getvalue(self):
+              return self.output
+
+      buffer = OutputBuffer()
+      sys.stdout = buffer
+      sys.stderr = buffer
+
+      def run_code(ev):
+          output_div = document["output"]
+          output_div.clear()
+
+          code = window.editor.getValue()
+
+          try:
+              exec(code)
+              output_div.text = buffer.getvalue() if buffer.getvalue() else "Keine Ausgabe."
+          except Exception as e:
+              output_div.text = f"Fehler: {str(e)}"
+
+          buffer.output = ""
+
+      document["run"].bind("click", run_code)
+    </script>
+  </body>
+</html>
