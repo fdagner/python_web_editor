@@ -4,6 +4,9 @@ This is a simple Python editor that allows users to write, run, and download Pyt
 
 This project is not intended for production use but is designed for **educational purposes**, such as in classrooms or learning environments. It can be useful for quick Python exercises, demonstrations, or as a teaching aid, but it is not optimized for real-world application development.
 
+![grafik](https://github.com/user-attachments/assets/706792a8-8559-4cb4-b417-10eceb249d9c)
+
+
 ## Features
 
 1. **Code Editing with Ace Editor**  
@@ -28,8 +31,10 @@ This project is not intended for production use but is designed for **educationa
 7. **Code Output**  
    The output of the executed code will be displayed in the "Output" section. If there are any errors in the code, they will be shown here as well.
 
-8. **Debugging**
+8. **Debugging**  
    A breakpoint can be set. The code is executed including the line of the breakpoint.
+   ![grafik](https://github.com/user-attachments/assets/22685f29-de4b-4d39-90c1-0de3a95445f1)
+
 
 ## Usage
 
