@@ -2,6 +2,8 @@
 
 This is a simple Python editor that allows users to write, run, and download Python code directly in the browser using [Brython](https://brython.info/). It integrates a code editor using the [Ace Editor](https://ace.c9.io/) and supports features like loading and saving code, fullscreen mode, and code execution with Brython.
 
+This project is not intended for production use but is designed for **educational purposes**, such as in classrooms or learning environments. It can be useful for quick Python exercises, demonstrations, or as a teaching aid, but it is not optimized for real-world application development.
+
 ## Features
 
 1. **Code Editing with Ace Editor**  
