@@ -91,14 +91,26 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("run").addEventListener("click", function () {
     const outputDiv = document.getElementById("output");
     outputDiv.textContent = "Code wird ausgeführt...";
-
+  
     try {
+      // Redirect stdout to the output div
+      __BRYTHON__.python_to_js(`
+        import sys
+        from browser import document
+        class OutputRedirector:
+            def write(self, text):
+                document["output"].textContent += text
+            def flush(self):
+                pass
+        sys.stdout = OutputRedirector()
+      `);
       __BRYTHON__.run_script(editor.getValue());
+      if (outputDiv.textContent === "Code wird ausgeführt...") {
+        outputDiv.textContent += "\nFertig!";
+      }
     } catch (error) {
       outputDiv.textContent = `Fehler: ${error}`;
     }
-
-
   });
   document.getElementById("download").addEventListener("click", function () {
     const filename = getQueryParam("file") || "code.py";
