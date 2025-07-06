@@ -81,6 +81,14 @@ button:hover {
     background: #007bff;
 }
 
+.file-button {
+    background: #333;
+}
+
+.file-button:hover {
+    background: #111;
+}
+
 .download-button:hover {
     background: #0056b3;
 }

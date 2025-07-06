@@ -162,6 +162,37 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+    // Trigger File Input when button is clicked
+  document.getElementById("loadFileBtn").addEventListener("click", function () {
+    document.getElementById("fileLoader").click();
+  });
+
+  // Load Python file from user input
+  document.getElementById("fileLoader").addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.name.endsWith(".py")) {
+      alert("Bitte eine Python-Datei (*.py) auswählen.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const code = e.target.result;
+      editor.setValue(code, -1);
+      syncEditorWithBreakpoint();  // Aktualisiere zweiten Editor
+    };
+    reader.readAsText(file);
+
+    // Optional: Speicher zurücksetzen, damit der Inhalt nicht gespeichert bleibt
+    localStorage.removeItem(storageKey);
+    localStorage.removeItem(`${storageKey}_breakpoints`);
+    breakpoints.clear();
+    editor.session.clearBreakpoints();
+  });
+
+
   // Monitors the end of full screen mode
   document.addEventListener("fullscreenchange", function () {
     if (!document.fullscreenElement) {
